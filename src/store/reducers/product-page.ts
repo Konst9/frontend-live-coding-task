@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { LinkedProduct, Product } from '../../models';
-import { setProduct } from "../actions/product-page";
+import {setLinkedProducts, setProduct} from "../actions/product-page";
 
 type CatalogPageState = {
   product: Product | undefined;
@@ -21,4 +21,7 @@ export const productPageReducer = createReducer(defaultState, (builder) => {
     .addCase(setProduct, (state, action) => {
       state.product = action.payload;
     })
+    .addCase(setLinkedProducts, (state, action) => {
+      state.linkedProducts = action.payload;
+    });
 });
