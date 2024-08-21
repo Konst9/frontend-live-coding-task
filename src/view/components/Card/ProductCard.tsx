@@ -1,12 +1,15 @@
 import React from 'react';
-import { Product } from '../../../models'
 import './productCard.css'
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { useLoadProduct } from "../../hooks/useLoadProducts";
 
-interface ProductCardProps {
-  product: Product | null;
-}
+export const ProductCard: React.FC = () => {
+  const { productId } = useParams<{ productId: string }>();
+  const product = useSelector((state: RootState) => state.productPage.product || null);
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  useLoadProduct(productId);
 
   if (!product) {
     return <p>Товар не найден</p>;
