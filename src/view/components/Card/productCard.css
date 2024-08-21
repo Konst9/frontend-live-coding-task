@@ -1,3 +1,19 @@
+.product-wrapper {
+   display: flex;
+   gap: 8px;
+}
+
 .product-card-item {
+   width: 50%;
+   border: 1px dotted black;
+}
+
+.compare-wrapper {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+}
+
+.product-card--compare-item {
    border: 1px dotted black;
 }

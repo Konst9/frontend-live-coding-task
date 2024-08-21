@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { LinkedProduct, Product } from '../../models';
-import {setLinkedProducts, setProduct} from "../actions/product-page";
+import {addProductToCompareList, setLinkedProducts, setProduct} from "../actions/product-page";
 
 type CatalogPageState = {
   product: Product | undefined;
@@ -23,5 +23,12 @@ export const productPageReducer = createReducer(defaultState, (builder) => {
     })
     .addCase(setLinkedProducts, (state, action) => {
       state.linkedProducts = action.payload;
+    })
+    .addCase(addProductToCompareList, (state, action) => {
+      if (!state.comparingProducts) {
+        state.comparingProducts = [action.payload];
+      } else {
+        state.comparingProducts.push(action.payload);
+      }
     });
 });

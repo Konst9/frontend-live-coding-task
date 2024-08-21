@@ -1,12 +1,12 @@
-import { RootState } from '..';
-import { LinkedProduct, Product } from '../../models';
+  import { RootState } from '..';
+  import { LinkedProduct, Product } from '../../models';
 
-const productPageSelector = (state: RootState) => state.productPage;
+  const productPageSelector = (state: RootState) => state.productPage;
 
-export const productSelector = (state: RootState) => productPageSelector(state).product;
+  export const productSelector = (state: RootState) => productPageSelector(state).product;
 
-export const linkedProductsSelector = (state: RootState): LinkedProduct[] =>
-  productPageSelector(state).linkedProducts || [];
+  export const linkedProductsSelector = (state: RootState): LinkedProduct[] =>
+    productPageSelector(state).linkedProducts || [];
 
-export const compareListSelector = (state: RootState): Product[] =>
-  productPageSelector(state).comparingProducts || [];
+  export const compareListSelector = (state: RootState): Product[] =>
+    productPageSelector(state).comparingProducts || [];
