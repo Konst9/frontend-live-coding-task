@@ -7,21 +7,20 @@ import { useLoadProduct } from "../../hooks/useLoadProducts";
 
 export const ProductCard: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-  const product = useSelector((state: RootState) => state.productPage.product || null);
   const compareList = useSelector((state: RootState) => state.productPage.comparingProducts);
 
-  useLoadProduct(productId);
-
-  if (!product) {
-    return <p>Товар не найден</p>;
-  }
+  const product = useLoadProduct(productId);
 
   return (
     <div className="product-wrapper">
-      <div className="product-card-item">
-        <h2>{product.name}</h2>
-        <p>Price: {product.price}</p>
-      </div>
+      {product ? (
+        <div className="product-card-item">
+          <h2>{product.name}</h2>
+          <p>Price: {product.price}</p>
+        </div>
+      ) : (
+        <p>Loading product...</p>
+      )}
       <div className="compare-wrapper">
         {compareList?.map((compareProduct, index) => (
           <div className="product-card--compare-item" key={index}>
