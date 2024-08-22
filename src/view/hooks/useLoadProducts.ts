@@ -1,15 +1,20 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { setProduct } from '../../store/actions/product-page';
-import { products } from '../../gateways/api';
+import {useEffect, useState} from 'react';
+import {Product} from "../../models";
+import {MockProductPageGateway} from "../../gateways/product-page";
 
 export const useLoadProduct = (productId?: string) => {
-  const dispatch = useDispatch();
+  const [product, setProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    const productData = products.find(p => p.id === productId) || null;
-    if (productData) {
-      dispatch(setProduct(productData));
+    const gateway = new MockProductPageGateway();
+    if (productId) {
+      gateway.getProduct(productId)
+        .then(fetchedProduct => setProduct(fetchedProduct))
+        .catch(error => console.error(error));
+    } else {
+      console.error('Product ID is undefined');
     }
-  }, [dispatch, productId]);
+  }, [productId]);
+
+  return product;
 };
