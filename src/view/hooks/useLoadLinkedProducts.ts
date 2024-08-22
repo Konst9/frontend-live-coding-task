@@ -1,52 +1,61 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { setLinkedProducts } from '../../store/actions/product-page';
-import { products } from '../../gateways/api';
+import { useEffect, useState } from 'react';
 import { LinkedProduct } from '../../models';
-import { useFindCategory } from './useFindCategory';
+import { MockProductPageGateway } from '../../gateways/product-page';
+
+interface LinkedProducts {
+  analogProducts: LinkedProduct[];
+  relatedProducts: LinkedProduct[];
+  otherProducts: LinkedProduct[];
+}
 
 export const useLoadLinkedProducts = (productId: string | undefined) => {
-  const dispatch = useDispatch();
-  const findCategory = useFindCategory();
+  const [linkedProducts, setLinkedProducts] = useState<LinkedProducts>({
+    analogProducts: [],
+    relatedProducts: [],
+    otherProducts: []
+  });
 
   useEffect(() => {
     if (productId) {
-      const selectedProduct = products.find(p => p.id === productId);
-      if (selectedProduct) {
-        const selectedCategory = findCategory(selectedProduct.categoryId);
+      const gateway = new MockProductPageGateway();
 
-        const analogProducts: LinkedProduct[] = products
-          .filter(p => p.categoryId === selectedProduct.categoryId && p.id !== selectedProduct.id)
-          .map(p => ({
-            ...p,
-            linkType: 'analog',
-          }));
+      Promise.all([
+        gateway.getProduct(productId),
+        gateway.getLinkedProducts(productId)
+      ])
+        .then(([product, fetchedProducts]) => {
+          const analogProducts: LinkedProduct[] = [];
+          const relatedProducts: LinkedProduct[] = [];
+          const otherProducts: LinkedProduct[] = [];
 
-        const relatedProducts: LinkedProduct[] = products
-          .filter(p => {
-            const pCategory = findCategory(p.categoryId);
-            return pCategory && pCategory.id !== selectedCategory?.id;
-          })
-          .map(p => ({
-            ...p,
-            linkType: 'related',
-          }));
+          fetchedProducts.forEach((linkedProduct) => {
+            const linkedProductWithType: LinkedProduct = {
+              ...linkedProduct,
+              linkType: 'other'
+            };
 
-        const analogRelatedLinkedProducts = [...analogProducts, ...relatedProducts];
+            if (linkedProduct.category?.id === product.category?.id) {
+              linkedProductWithType.linkType = 'analog';
+              analogProducts.push(linkedProductWithType);
+            } else if (linkedProduct.category?.id?.startsWith(product.category?.id?.split('.')[0] || '')) {
+              linkedProductWithType.linkType = 'related';
+              relatedProducts.push(linkedProductWithType);
+            } else {
+              otherProducts.push(linkedProductWithType);
+            }
+          });
 
-        const allLinkedProductIds = new Set(analogRelatedLinkedProducts.map(p => p.id));
-
-        const otherProducts: LinkedProduct[] = products
-          .filter(p => !allLinkedProductIds.has(p.id) && p.id !== selectedProduct.id)
-          .map(p => ({
-            ...p,
-            linkType: 'other',
-          }) as LinkedProduct);
-
-        const allLinkedProducts = [...analogRelatedLinkedProducts, ...otherProducts];
-
-        dispatch(setLinkedProducts(allLinkedProducts));
-      }
+          setLinkedProducts({
+            analogProducts,
+            relatedProducts,
+            otherProducts
+          });
+        })
+        .catch(error => console.error(error));
+    } else {
+      console.error('Product ID is undefined');
     }
-  }, [dispatch, productId, findCategory]);
+  }, [productId]);
+
+  return linkedProducts;
 };

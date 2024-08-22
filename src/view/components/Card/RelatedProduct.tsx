@@ -1,27 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { LinkedProduct } from '../../../models';
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
-import { useLoadLinkedProducts } from "../../hooks/useLoadLinkedProducts";
-import { useParams } from "react-router-dom";
-import {Modal} from "../common/modal";
+import { useLoadLinkedProducts } from '../../hooks/useLoadLinkedProducts';
+import { useParams } from 'react-router-dom';
+import { Modal } from '../common/modal';
 
-interface LinkedProductsProps {
-  linkedProducts?: LinkedProduct[];
-}
-
-export const RelatedProducts: React.FC<LinkedProductsProps> = () => {
+export const RelatedProducts: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
-
-  const relatedProducts = useSelector((state: RootState) =>
-    state.productPage.linkedProducts?.filter(p => p.linkType === 'related') || []
-  );
-
-
-  useLoadLinkedProducts(productId);
-
   const [selectedProduct, setSelectedProduct] = useState<LinkedProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { relatedProducts } = useLoadLinkedProducts(productId);
 
   const openModal = (product: LinkedProduct) => {
     setSelectedProduct(product);
