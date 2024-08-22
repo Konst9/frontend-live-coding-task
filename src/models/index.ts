@@ -22,8 +22,9 @@ export type Product = {
  *
  * analog – Аналог
  * related – Сопутствующий товар
+ * other - Остальные товары
  */
-export type ProductLinkType = 'analog' | 'related' | undefined;
+export type ProductLinkType = 'analog' | 'related' | 'other' | undefined;
 
 /**
  * Связанный товар
